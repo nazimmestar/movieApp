@@ -1,6 +1,9 @@
 import React, { useEffect } from "react";
 import Search from "./components/Search";
 import { useState } from "react";
+import Spinner from "./components/Spinner";
+import MovieCard from "./components/MovieCard";
+import { useDebounce, useStateList } from "react-use";
 
 const API_KEY = import.meta.env.VITE_API_KEY;
 const API_BASE_URL = "https://api.themoviedb.org/3";
@@ -13,26 +16,26 @@ const API_OPTION = {
 };
 
 const App = () => {
-
   const [SearchTerm, setSearchTerm] = useState("");
+  const [debounced, setdebounced] = useState("");
+  const [errorMessage, seterrorMessage] = useState("");
   const [movieList, setmovieList] = useState([]);
   const [isLoading, setisLoading] = useState(false);
 
-
   useEffect(() => {
-    fetchmovies();
-  }, []);
+    fetchmovies(debounced);
+  }, [debounced]);
 
-  const [errorMessage, seterrorMessage] = useState("");
+  useDebounce(() => setdebounced(SearchTerm), 600, [SearchTerm]);
 
-  const fetchmovies = async () => {
-
-    seterrorMessage('');
+  const fetchmovies = async (query) => {
+    seterrorMessage("");
     setisLoading(true);
-    
-    try {
 
-      const endpoint = `${API_BASE_URL}/discover/movie?=sort_by=popularity.desc`;
+    try {
+      const endpoint = query
+        ? `${API_BASE_URL}/search/movie?query=${encodeURIComponent(query)}`
+        : `${API_BASE_URL}/discover/movie?=sort_by=popularity.desc`;
       const response = await fetch(endpoint, API_OPTION);
 
       if (!response.ok) {
@@ -41,8 +44,8 @@ const App = () => {
 
       const data = await response.json();
 
-      if(data.Response == 'false' ){
-        seterrorMessage(data.Error || 'faild to fetch movies');
+      if (data.Response == "false") {
+        seterrorMessage(data.Error || "faild to fetch movies");
         setmovieList([]);
         return;
       }
@@ -72,15 +75,20 @@ const App = () => {
         <Search SearchTerm={SearchTerm} setSearchTerm={setSearchTerm} />
         <section className="all-movies">
           <h2>All movies</h2>
+
           {isLoading ? (
-            <p className="text-white">Loading ...</p>
+            <Spinner></Spinner>
           ) : errorMessage ? (
             <p className="text-red-500">{errorMessage}</p>
-          ) :(
-            <ul>{movieList.map((movie) => (
-              <p className="text-white">{movie.title}</p>
-            ))}</ul>
-          ) }
+          ) : (
+            <ul>
+              {movieList.map((movie) => (
+                <MovieCard key={movie.id} movie={movie}>
+                  {" "}
+                </MovieCard>
+              ))}
+            </ul>
+          )}
         </section>
       </div>
     </main>
