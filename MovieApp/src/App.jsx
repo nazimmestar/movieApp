@@ -4,6 +4,7 @@ import { useState } from "react";
 import Spinner from "./components/Spinner";
 import MovieCard from "./components/MovieCard";
 import { useDebounce, useStateList } from "react-use";
+import { updateSearchCount } from "./appwrite";
 
 const API_KEY = import.meta.env.VITE_API_KEY;
 const API_BASE_URL = "https://api.themoviedb.org/3";
@@ -51,6 +52,7 @@ const App = () => {
       }
 
       setmovieList(data.results);
+      updateSearchCount();
 
       console.log(data);
     } catch (error) {
