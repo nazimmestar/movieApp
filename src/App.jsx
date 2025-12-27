@@ -34,7 +34,7 @@ const App = () => {
   }, []);
   
 
-  useDebounce(() => setdebounced(SearchTerm), 600, [SearchTerm]);
+  useDebounce(() => setdebounced(SearchTerm), 700, [SearchTerm]);
 
   const fetchmovies = async (query) => {
     seterrorMessage("");
