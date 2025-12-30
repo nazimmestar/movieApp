@@ -21,5 +21,5 @@ The app also displays **trending movies based on user search activity**.
 - **React** (Vite)
 - **Tailwind CSS**
 - **TMDB API** (The Movie Database)
-- **Appwrite** (for tracking trending searches)
+- **Appwrite** 
 - **react-use** (debounce hook)
